@@ -16,12 +16,46 @@ let polyline // La polyline en cours de construction;
 
 const polylineMachine = createMachine(
     {
-        /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAcsAbATwBkBLDMfEI2SgF0qwzoA9EBaANnVI9eAOgAM4iZMkB2ZGnokK1MMMoRitJAsYs2nRABYATAMQAOAIzCD0gJwXetgwGZezgw9ty5QA */
+        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiALQB2InwCc6vgGYArACZtygIwAOPsYAsANgA0ITImP79RY+pe7tfXe+N9TYwBfIPs0LDxCIggAJwBDAHcCKAomfHEwGP4hJBA0MUlpWQUEFVMiS1MbbS11QOMTOwclYzMifUr9U11TU20jSzqQsIwcAmJYxOTU2ABjOOQwbNl8iSkZXJLFK3LNXT5lZX6LX1N7RwR3Vy0A6xd9H1NrU31hvNHIifik-BSAITiswA1rBkICloIVqI1kVNoh9uU+AdtH5TOplH1tOcnBoiJoBtZdOoDCTrG9wmMopMfilaIxWBxuMtcqtChtQCUuro1JYzN0nh0UejsQh9MZuYNjNprJZtDZ0Q9tOSPuNot9pnTmGxOLxjDkRAV1sVEDZVOLDoS+LzlOj1CLFPpudY9HwusoXC8aspdMqIqrqRr6MxaAA1JjMg0w9nyE2uoiE-q9K4HGz25zqeMPDQo6xmDTqEKhED4VAQOBQv2EKGG2EcpRijPmJEudRGAyS+1i6x4rPqdx3DwdX2U4ikcjVqPG0oNYxEJuu-St70dPsiu7tG0NA4L0zupVFimfNVTX4TtlTh4ZpEWR7LtFykW6bvWTeHR2ttF8GWFoJAA */
         id: "polyLine",
         initial: "idle",
         states : {
             idle: {
-            }
+                on: {
+                    MOUSECLICK: {
+                        target: "drawing",
+                        actions: ["createLine"],
+                    }
+                }
+            },
+            drawing: {
+                on: {
+                    Enter: {
+                        actions: ["saveLine"],
+                        target: "idle",
+                    },
+                    Escape: {
+                        actions: ["abandon"],
+                        target : "idle"
+                    },
+                    Backspace: {
+                        actions: ["removeLastPoint"],
+                        cond: "plusDeDeuxPoints"
+                    },
+                    MOUSECLICK: [{
+                        actions: ["addPoint"],
+                        target: "drawing",
+                        internal: true,
+                        cond: "pasPlein"
+                    }, "idle"],
+                    MOUSEMOVE: {
+                        actions: ["setLastPoint"],
+                        target: "drawing",
+                        internal: true,
+                    }
+                },
+            },
+
         }
     },
     // Quelques actions et guardes que vous pouvez utiliser dans votre machine
